@@ -1,0 +1,30 @@
+FROM debian:bookworm-20240812-slim
+
+LABEL maintainer="Berny Linville <bernylinville@devopsthink.org>"
+LABEL version="1.0.0"
+LABEL description="Ansible environment for Pukka"
+
+ARG ANSIBLE_VERSION=10.3.0
+ARG ANSIBLE_LINT_VERSION=24.7.0
+
+WORKDIR /ansible-pukka
+COPY requirements.txt requirements.yml ./
+
+RUN apt-get update -q && \
+    apt-get install -yq --no-install-recommends \
+        curl python3 python3-pip openssh-client sshpass vim rsync && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* /var/log/* && \
+    rm -rf /usr/lib/python3.11/EXTERNALLY-MANAGED && \
+    pip install -U pip && \
+    pip install --no-compile --no-cache-dir ansible==${ANSIBLE_VERSION} ansible-lint==${ANSIBLE_LINT_VERSION} && \
+    find /usr -type d -name '*__pycache__' -prune -exec rm -rf {} \;
+
+RUN --mount=type=bind,source=requirements.yml,target=requirements.yml \
+    ansible-galaxy install -r requirements.yml
+
+RUN useradd -m -s /bin/bash ansible
+USER ansible
+
+RUN --mount=type=bind,source=requirements.yml,target=requirements.yml \
+    ansible-galaxy install -r requirements.yml
