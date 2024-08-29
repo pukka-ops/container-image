@@ -37,12 +37,17 @@ jobs:
           context: ./pukka-ansible
           file: ./pukka-ansible/Containerfile
           push: true
-          tags: ${{ secrets.ALIYUN_ACR_REGISTRY }}/base/ansible-pukka:${{ steps.tag.outputs.TAG }}
+          tags: |
+            ${{ secrets.ALIYUN_ACR_REGISTRY }}/base/ansible-pukka:${{ steps.tag.outputs.TAG }}
+            ${{ secrets.ALIYUN_ACR_REGISTRY }}/base/ansible-pukka:latest
+          cache-from: type=registry,ref=${{ secrets.ALIYUN_ACR_REGISTRY }}/base/ansible-pukka:latest
+          cache-to: type=inline
 
       - name: 输出镜像地址
         run: |
           echo "镜像已成功构建并推送到："
-          echo "${{ secrets.ALIYUN_ACR_REGISTRY }}/base/ansible-pukka:${{ steps.tag.outputs.TAG }}"
+          echo "特定版本: ${{ secrets.ALIYUN_ACR_REGISTRY }}/base/ansible-pukka:${{ steps.tag.outputs.TAG }}"
+          echo "最新版本: ${{ secrets.ALIYUN_ACR_REGISTRY }}/base/ansible-pukka:latest"
 
       - name: 创建 GitHub Release
         uses: actions/create-release@v1
@@ -53,6 +58,8 @@ jobs:
           release_name: Release ${{ steps.tag.outputs.TAG }}
           body: |
             新的 Ansible Pukka 镜像已构建并推送。
-            镜像地址：${{ secrets.ALIYUN_ACR_REGISTRY }}/base/ansible-pukka:${{ steps.tag.outputs.TAG }}
+            
+            特定版本镜像地址：${{ secrets.ALIYUN_ACR_REGISTRY }}/base/ansible-pukka:${{ steps.tag.outputs.TAG }}
+            最新版本镜像地址：${{ secrets.ALIYUN_ACR_REGISTRY }}/base/ansible-pukka:latest
           draft: false
           prerelease: false
