@@ -3,7 +3,7 @@ name: 构建并推送 ansible-pukka 镜像
 on:
   push:
     paths:
-      - 'pukka-ansible/Containerfile'
+      - 'pukka-ansible/*'
 
 jobs:
   build-and-push:
