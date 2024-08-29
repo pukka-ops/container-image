@@ -31,9 +31,28 @@ jobs:
           echo "TAG=$(date +%Y%m%d%H%M%S)-${GITHUB_SHA::8}" >> $GITHUB_OUTPUT
 
       - name: 构建并推送镜像
+        id: docker_build
         uses: docker/build-push-action@v6
         with:
           context: ./pukka-ansible
           file: ./pukka-ansible/Containerfile
           push: true
           tags: ${{ secrets.ALIYUN_ACR_REGISTRY }}/base/ansible-pukka:${{ steps.tag.outputs.TAG }}
+
+      - name: 输出镜像地址
+        run: |
+          echo "镜像已成功构建并推送到："
+          echo "${{ secrets.ALIYUN_ACR_REGISTRY }}/base/ansible-pukka:${{ steps.tag.outputs.TAG }}"
+
+      - name: 创建 GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.tag.outputs.TAG }}
+          release_name: Release ${{ steps.tag.outputs.TAG }}
+          body: |
+            新的 Ansible Pukka 镜像已构建并推送。
+            镜像地址：${{ secrets.ALIYUN_ACR_REGISTRY }}/base/ansible-pukka:${{ steps.tag.outputs.TAG }}
+          draft: false
+          prerelease: false
