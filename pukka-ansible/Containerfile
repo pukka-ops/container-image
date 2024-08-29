@@ -8,7 +8,7 @@ ARG ANSIBLE_VERSION=10.3.0
 ARG ANSIBLE_LINT_VERSION=24.7.0
 
 WORKDIR /ansible-pukka
-COPY requirements.txt requirements.yml ./
+COPY requirements.yml ./
 
 RUN apt-get update -q && \
     apt-get install -yq --no-install-recommends \
