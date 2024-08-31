@@ -3,8 +3,7 @@ name: 构建并推送 ansible-pukka 镜像
 on:
   push:
     paths:
-      - 'pukka-ansible/Containerfile'
-      - 'pukka-ansible/requirements.yml'
+      - 'pukka-ansible/**'
       - '.github/workflows/pukka-ansible.yml'
 
 jobs:
@@ -51,6 +50,27 @@ jobs:
           echo "特定版本: ${{ secrets.ALIYUN_ACR_REGISTRY }}/base/ansible-pukka:${{ steps.tag.outputs.TAG }}"
           echo "最新版本: ${{ secrets.ALIYUN_ACR_REGISTRY }}/base/ansible-pukka:latest"
 
+      - name: 验证镜像是否存在
+        run: |
+          docker pull ${{ secrets.ALIYUN_ACR_REGISTRY }}/base/ansible-pukka:${{ steps.tag.outputs.TAG }}
+        continue-on-error: true
+
+      - name: 重新登录到阿里云容器镜像服务
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ secrets.ALIYUN_ACR_REGISTRY }}
+          username: ${{ secrets.ALIYUN_ACR_USERNAME }}
+          password: ${{ secrets.ALIYUN_ACR_PASSWORD }}
+
+      - name: 输出调试信息
+        run: |
+          echo "Docker 版本:"
+          docker version
+          echo "镜像列表:"
+          docker images
+          echo "Trivy 版本:"
+          trivy --version
+
       - name: 运行 Trivy 漏洞扫描
         uses: aquasecurity/trivy-action@0.24.0
         with:
@@ -60,6 +80,10 @@ jobs:
           ignore-unfixed: true
           vuln-type: 'os,library'
           severity: 'CRITICAL,HIGH'
+          timeout: '15m'
+        env:
+          TRIVY_USERNAME: ${{ secrets.ALIYUN_ACR_USERNAME }}
+          TRIVY_PASSWORD: ${{ secrets.ALIYUN_ACR_PASSWORD }}
 
       - name: 上传 Trivy 扫描结果
         uses: github/codeql-action/upload-sarif@v2
