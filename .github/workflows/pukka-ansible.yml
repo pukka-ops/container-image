@@ -49,6 +49,22 @@ jobs:
           echo "特定版本: ${{ secrets.ALIYUN_ACR_REGISTRY }}/base/ansible-pukka:${{ steps.tag.outputs.TAG }}"
           echo "最新版本: ${{ secrets.ALIYUN_ACR_REGISTRY }}/base/ansible-pukka:latest"
 
+      - name: 运行 Trivy 漏洞扫描
+        uses: aquasecurity/trivy-action@0.24.0
+        with:
+          image-ref: '${{ secrets.ALIYUN_ACR_REGISTRY }}/base/ansible-pukka:${{ steps.tag.outputs.TAG }}'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+
+      - name: 上传 Trivy 扫描结果
+        uses: github/codeql-action/upload-sarif@v2
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
+
       - name: 创建 GitHub Release
         uses: actions/create-release@v1
         env:
