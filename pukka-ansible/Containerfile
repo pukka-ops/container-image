@@ -26,7 +26,8 @@ RUN --mount=type=bind,source=requirements.yml,target=requirements.yml \
 RUN useradd -m -s /bin/bash ansible && \
     mkdir /home/ansible/.ssh && \
     mkdir /home/ansible/.ansible && \
-    chown -R ansible:ansible /home/ansible
+    chown -R ansible:ansible /home/ansible && \
+    chmod 777 /tmp
 
 USER ansible
 
