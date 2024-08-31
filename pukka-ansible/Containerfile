@@ -23,7 +23,10 @@ RUN apt-get update -q && \
 RUN --mount=type=bind,source=requirements.yml,target=requirements.yml \
     ansible-galaxy install -r requirements.yml
 
-RUN useradd -m -s /bin/bash ansible
+RUN useradd -m -s /bin/bash ansible && \
+    mkdir /home/ansible/{.ssh,.ansible} && \
+    chown -R ansible:ansible /home/ansible
+
 USER ansible
 
 RUN --mount=type=bind,source=requirements.yml,target=requirements.yml \
