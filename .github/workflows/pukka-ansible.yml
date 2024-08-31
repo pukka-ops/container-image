@@ -62,15 +62,6 @@ jobs:
           username: ${{ secrets.ALIYUN_ACR_USERNAME }}
           password: ${{ secrets.ALIYUN_ACR_PASSWORD }}
 
-      - name: 输出调试信息
-        run: |
-          echo "Docker 版本:"
-          docker version
-          echo "镜像列表:"
-          docker images
-          echo "Trivy 版本:"
-          trivy --version
-
       - name: 运行 Trivy 漏洞扫描
         uses: aquasecurity/trivy-action@0.24.0
         with:
