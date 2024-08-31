@@ -17,14 +17,15 @@ RUN apt-get update -q && \
     rm -rf /var/lib/apt/lists/* /var/log/* && \
     rm -rf /usr/lib/python3.11/EXTERNALLY-MANAGED && \
     pip install -U pip && \
-    pip install --no-compile --no-cache-dir ansible==${ANSIBLE_VERSION} ansible-lint==${ANSIBLE_LINT_VERSION} ara passlib && \
+    pip install --no-compile --no-cache-dir ansible==${ANSIBLE_VERSION} ansible-lint==${ANSIBLE_LINT_VERSION} passlib && \
     find /usr -type d -name '*__pycache__' -prune -exec rm -rf {} \;
 
 RUN --mount=type=bind,source=requirements.yml,target=requirements.yml \
     ansible-galaxy install -r requirements.yml
 
 RUN useradd -m -s /bin/bash ansible && \
-    mkdir /home/ansible/{.ssh,.ansible} && \
+    mkdir /home/ansible/.ssh && \
+    mkdir /home/ansible/.ansible && \
     chown -R ansible:ansible /home/ansible
 
 USER ansible
