@@ -76,12 +76,6 @@ jobs:
           TRIVY_USERNAME: ${{ secrets.ALIYUN_ACR_USERNAME }}
           TRIVY_PASSWORD: ${{ secrets.ALIYUN_ACR_PASSWORD }}
 
-      - name: 上传 Trivy 扫描结果
-        uses: github/codeql-action/upload-sarif@v2
-        if: always()
-        with:
-          sarif_file: 'trivy-results.sarif'
-
       - name: 创建 GitHub Release
         uses: actions/create-release@v1
         env:
