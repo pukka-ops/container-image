@@ -29,7 +29,18 @@ RUN useradd -m -s /bin/bash ansible && \
     chown -R ansible:ansible /home/ansible && \
     chmod 777 /tmp
 
+RUN mkdir -p /tmp/.ansible/tmp && \
+    chmod -R 777 /tmp/.ansible && \
+    chown -R ansible:ansible /tmp/.ansible
+
 USER ansible
+
+RUN whoami && \
+    ls -la /tmp && \
+    touch /tmp/test_file && \
+    echo "Test successful" > /tmp/test_file && \
+    cat /tmp/test_file && \
+    rm -rf /tmp/test_file
 
 RUN --mount=type=bind,source=requirements.yml,target=requirements.yml \
     ansible-galaxy install -r requirements.yml
