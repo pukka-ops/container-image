@@ -22,6 +22,3 @@ RUN apt-get update -q && \
 
 RUN --mount=type=bind,source=requirements.yml,target=requirements.yml \
     ansible-galaxy install -r requirements.yml
-
-RUN --mount=type=bind,source=requirements.yml,target=requirements.yml \
-    ansible-galaxy install -r requirements.yml
