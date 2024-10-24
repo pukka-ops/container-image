@@ -76,15 +76,15 @@ jobs:
           TRIVY_USERNAME: ${{ secrets.ALIYUN_ACR_USERNAME }}
           TRIVY_PASSWORD: ${{ secrets.ALIYUN_ACR_PASSWORD }}
 
-      - name: 创建 GitHub Release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ steps.tag.outputs.TAG }}
-          release_name: Release ${{ steps.tag.outputs.TAG }}
-          body: |
-            新的 Ansible Pukka 镜像已构建并推送。
+      # - name: 创建 GitHub Release
+      #   uses: actions/create-release@v1
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   with:
+      #     tag_name: ${{ steps.tag.outputs.TAG }}
+      #     release_name: Release ${{ steps.tag.outputs.TAG }}
+      #     body: |
+      #       新的 Ansible Pukka 镜像已构建并推送。
             
             特定版本镜像地址：${{ secrets.ALIYUN_ACR_REGISTRY }}/base/ansible-pukka:${{ steps.tag.outputs.TAG }}
             最新版本镜像地址：${{ secrets.ALIYUN_ACR_REGISTRY }}/base/ansible-pukka:latest
